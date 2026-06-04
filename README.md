@@ -1,6 +1,6 @@
 # 引力井 (Gravity Well) — 个人人生导航系统
 
-基于 [Agent Skills 标准](https://agentskills.io/specification) 的个人人生导航 Skill，可在 Claude Code、Codex、Cursor、Gemini CLI 等 50+ 兼容运行时中运行。
+> 基于开放的 [Agent Skills 协议](https://agentskills.io/specification)，可在 **Claude Code、Codex、Cursor、OpenClaw、Hermes Agent、CodeBuddy、Workbuddy、Gemini CLI、OpenCode** 等 50+ 兼容运行时中运行。
 
 ## 能力
 
