@@ -22,6 +22,7 @@
 </div>
 
 ---
+<img width="2559" height="1440" alt="引力井思维模型" src="https://github.com/user-attachments/assets/ccfe31ab-f12f-4b26-bc8b-7d3d2dd25ed4" />
 
 ## 效果示例
 
