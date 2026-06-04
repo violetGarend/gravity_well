@@ -1,6 +1,6 @@
-# 引力井 — 个人人生导航系统
+# 引力井 (Gravity Well) — 个人人生导航系统
 
-一个部署在 Claude Code 上的个人人生导航 Skill，代号「引力井」。
+基于 [Agent Skills 标准](https://agentskills.io/specification) 的个人人生导航 Skill，可在 Claude Code、Codex、Cursor、Gemini CLI 等 50+ 兼容运行时中运行。
 
 ## 能力
 
@@ -13,14 +13,12 @@
 
 ## 安装
 
-将本目录复制到 Claude Code 的 skills 路径：
-
 ```bash
 # 用户级安装（全局可用）
-cp -r 引力井/ ~/.claude/skills/引力井/
+cp -r 引力井/ ~/.claude/skills/gravity-well/
 
-# 或项目级安装
-cp -r 引力井/ your-project/.claude/skills/引力井/
+# 项目级安装
+cp -r 引力井/ your-project/.claude/skills/gravity-well/
 ```
 
 ## 使用
@@ -31,16 +29,33 @@ cp -r 引力井/ your-project/.claude/skills/引力井/
 
 首次使用会引导你选择数据存储目录，随后自动进入核心价值观勘探。
 
+## 目录结构
+
+```
+gravity-well/
+├── SKILL.md                         ← 入口：触发词调度 + 核心规则
+├── README.md
+├── references/                      ← 按需加载
+│   ├── 勘探.md                      ← 子系统1 完整流程
+│   ├── 雷达.md                      ← 子系统2 分析模板
+│   ├── 干预.md                      ← 子系统3 三步骤协议
+│   ├── 委员会.md                    ← 子系统4 议程+角色模拟
+│   └── 人格skills/                  ← 5个人格视角文件
+│       ├── steve-jobs-perspective.md
+│       ├── munger-perspective.md
+│       ├── elon-musk-perspective.md
+│       ├── andrej-karpathy-perspective.md
+│       └── ilya-sutskever-perspective.md
+└── assets/                          ← 模板文件
+    ├── 铁律模板.md
+    ├── 运营日志模板.md
+    └── 日志索引模板.md
+```
+
 ## 致谢
 
-本 Skill 内嵌的 5 个人格视角文件由 **[Nuwa（女娲）](https://github.com/alchaincyf)** 原创制作：
+本 Skill 内嵌的 5 个人格视角文件由 **[Nuwa（女娲）](https://github.com/alchaincyf)** 原创制作，基于各人物公开言论、授权传记和访谈提炼。每个文件文末均有完整署名和来源声明。
 
-- `references/人格skills/steve-jobs-perspective.md` — 史蒂夫·乔布斯视角
-- `references/人格skills/munger-perspective.md` — 查理·芒格视角
-- `references/人格skills/elon-musk-perspective.md` — 埃隆·马斯克视角
-- `references/人格skills/andrej-karpathy-perspective.md` — Andrej Karpathy 视角
-- `references/人格skills/ilya-sutskever-perspective.md` — Ilya Sutskever 视角
+## 许可
 
-## 数据
-
-所有勘探记录、分析报告、会议记录、干预记录存储在你选择的本地目录中，完全属于你。
+MIT
