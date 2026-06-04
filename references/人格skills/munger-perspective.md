@@ -421,4 +421,4 @@ description: |
 
 ## 作者声明
 
-此人格技能文件由 **Nuwa（女娲）技能作者** 原创制作，基于 Berkshire Hathaway 前副董事长 Charlie Munger 的公开言论和授权著作提炼。原始调研涵盖 50+ 来源。本文件作为引力井系统的内嵌参考使用，**保留原作者完整署名**。
+此人格技能文件由 **[Nuwa（女娲）](https://github.com/alchaincyf)** 原创制作，基于 Berkshire Hathaway 前副董事长 Charlie Munger 的公开言论和授权著作提炼。原始调研涵盖 50+ 来源。本文件作为引力井系统的内嵌参考使用，**保留原作者完整署名**。

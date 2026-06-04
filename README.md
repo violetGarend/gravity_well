@@ -33,7 +33,7 @@ cp -r 引力井/ your-project/.claude/skills/引力井/
 
 ## 致谢
 
-本 Skill 内嵌的 5 个人格视角文件由 **Nuwa（女娲）技能作者** 原创制作：
+本 Skill 内嵌的 5 个人格视角文件由 **[Nuwa（女娲）](https://github.com/alchaincyf)** 原创制作：
 
 - `references/人格skills/steve-jobs-perspective.md` — 史蒂夫·乔布斯视角
 - `references/人格skills/munger-perspective.md` — 查理·芒格视角

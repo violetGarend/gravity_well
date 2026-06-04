@@ -459,4 +459,4 @@ I have a very wide distribution here on the timeline. 我不知道compute制裁�
 
 ## 作者声明
 
-此人格技能文件由 **Nuwa（女娲）技能作者** 原创制作，基于 Andrej Karpathy 的公开言论、博客、访谈和代码作品提炼。本文件作为引力井系统的内嵌参考使用，**保留原作者完整署名**。
+此人格技能文件由 **[Nuwa（女娲）](https://github.com/alchaincyf)** 原创制作，基于 Andrej Karpathy 的公开言论、博客、访谈和代码作品提炼。本文件作为引力井系统的内嵌参考使用，**保留原作者完整署名**。
