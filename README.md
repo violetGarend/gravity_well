@@ -89,13 +89,13 @@
 打开你正在用的 agent（Claude Code、Codex、Cursor、OpenClaw、Hermes、CodeBuddy、Workbuddy、Gemini CLI、OpenCode 等），告诉它：
 
 ```
-帮我安装这个 skill：https://github.com/alchaincyf/gravity-well-skill
+帮我安装这个 skill：https://github.com/violetGarend/gravity_well
 ```
 
 或者用通用 CLI 安装器（[vercel-labs/skills](https://github.com/vercel-labs/skills)，支持 55+ runtime）：
 
 ```bash
-npx skills add alchaincyf/gravity-well-skill
+npx skills add violetGarend/gravity_well
 ```
 
 它会自动识别你当前的 runtime 并把 skill 放到正确目录。
@@ -115,7 +115,7 @@ npx skills add alchaincyf/gravity-well-skill
 | 其他 runtime | clone 到对应 runtime 的 `skills/` 目录 |
 
 ```bash
-git clone https://github.com/alchaincyf/gravity-well-skill <上面对应的路径>
+git clone https://github.com/violetGarend/gravity_well <上面对应的路径>
 ```
 
 </details>
