@@ -135,7 +135,7 @@ git clone https://github.com/violetGarend/gravity_well <上面对应的路径>
 启动引力井
 ```
 
-首次使用：选择数据存储目录（项目内 / 全局固定）→ 自动进入核心价值观勘探。
+首次使用：选择数据存储目录（项目内 / 全局固定）→ 4 题个人信息录入（称呼/学习/项目/原因，可跳过）→ 自动进入核心价值观勘探。
 
 日常使用：
 
@@ -189,6 +189,7 @@ gravity-well/
 │       └── ilya-sutskever-perspective.md
 └── assets/                          ← 模板文件
     ├── 铁律模板.md
+    ├── 个人信息模板.md
     ├── 运营日志模板.md
     └── 日志索引模板.md
 ```
