@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>执行之井 · 阶段导航</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'PingFang SC','Microsoft YaHei',sans-serif}
+body{background:#f4f6f8;padding:20px;color:#222}
+.container{max-width:900px;margin:0 auto}
+.header{padding:24px;background:linear-gradient(135deg,#1a1a2e,#16213e);color:#fff;border-radius:12px;margin-bottom:16px}
+.header h1{font-size:22px;margin-bottom:4px}
+.header .meta{font-size:13px;color:#8899aa;margin-top:8px}
+.card{background:#fff;border-radius:12px;padding:20px;margin-bottom:14px;box-shadow:0 1px 3px rgba(0,0,0,.08)}
+.card-title{font-size:16px;font-weight:600;margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.card-sub{font-size:12px;color:#888;margin-bottom:12px}
+
+/* 阶段背景 */
+.bg-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.bg-item{background:#f8f9fa;border-radius:8px;padding:12px}
+.bg-item .label{font-size:12px;color:#666;margin-bottom:4px}
+.bg-item .value{font-size:13px;line-height:1.6}
+.bg-item .value.quote{color:#1d4ed8;font-style:italic}
+
+/* 时间指标 */
+.time-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:16px}
+.time-item{text-align:center;padding:12px;background:#f8f9fa;border-radius:8px}
+.time-item .label{font-size:12px;color:#666;margin-bottom:4px}
+.time-item .value{font-size:22px;font-weight:700}
+.time-item .value.green{color:#22c55e}
+.time-item .value.yellow{color:#eab308}
+.time-item .value.red{color:#ef4444}
+.progress-bar{height:8px;background:#e5e7eb;border-radius:4px;margin-bottom:16px;overflow:hidden}
+.progress-fill{height:100%;border-radius:4px;transition:width .5s;background:linear-gradient(90deg,#22c55e,#eab308)}
+.progress-fill.warning{background:linear-gradient(90deg,#eab308,#ef4444)}
+.progress-fill.danger{background:#ef4444}
+
+/* 时间轴（历史进度） */
+.timeline{position:relative;padding-left:24px}
+.timeline::before{content:'';position:absolute;left:8px;top:4px;bottom:4px;width:2px;background:#e5e7eb}
+.tl-item{position:relative;padding:0 0 14px 12px}
+.tl-item:last-child{padding-bottom:0}
+.tl-item::before{content:'';position:absolute;left:-20px;top:4px;width:12px;height:12px;border-radius:50%;background:#fff;border:3px solid #d1d5db}
+.tl-item.done::before{background:#22c55e;border-color:#22c55e}
+.tl-item.current::before{background:#eab308;border-color:#eab308;box-shadow:0 0 0 3px rgba(234,179,8,.3)}
+.tl-item .tl-date{font-size:11px;color:#999}
+.tl-item .tl-event{font-size:13px;color:#333;margin-top:2px;line-height:1.5}
+
+/* 里程碑展开 */
+.ms-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.ms-card{border:1px solid #e5e7eb;border-radius:8px;padding:12px;background:#fff;border-top:3px solid #d1d5db}
+.ms-card.done{border-top-color:#22c55e;background:#f0fdf4}
+.ms-card.active{border-top-color:#eab308;background:#fffbeb}
+.ms-card .ms-name{font-size:13px;font-weight:600;margin-bottom:4px}
+.ms-card .ms-status{font-size:11px;color:#666;margin-bottom:6px}
+.ms-card .ms-status .tag{display:inline-block;padding:1px 6px;border-radius:3px;font-size:10px}
+.ms-card.done .ms-status .tag{background:#22c55e;color:#fff}
+.ms-card.active .ms-status .tag{background:#eab308;color:#fff}
+.ms-card .ms-period{font-size:11px;color:#999;margin-bottom:6px}
+.ms-card .ms-standard{font-size:11px;color:#666;margin-bottom:6px;line-height:1.4}
+.ms-card .ms-standard b{color:#333}
+.ms-card .ms-tasks{list-style:none;padding:0}
+.ms-card .ms-tasks li{font-size:11px;color:#555;padding:2px 0;border-top:1px dashed #eee;line-height:1.4}
+.ms-card .ms-tasks li:first-child{border-top:none}
+
+/* 聚焦 */
+.focus-list{padding:0;list-style:none}
+.focus-list li{padding:8px 0;border-bottom:1px solid #f0f0f0;font-size:14px;display:flex;align-items:flex-start;gap:8px}
+.focus-list li:last-child{border-bottom:none}
+.focus-list .tag{font-size:11px;padding:2px 8px;border-radius:4px;white-space:nowrap;margin-top:1px}
+.tag-committee{background:#dbeafe;color:#1d4ed8}
+.tag-radar{background:#fce7f3;color:#db2777}
+.tag-rule{background:#fef3c7;color:#b45309}
+
+/* 冻结 */
+.frozen-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.frozen-item{display:flex;align-items:center;gap:8px;padding:6px 10px;background:#f8f9fa;border-radius:6px;font-size:13px;color:#666}
+
+/* 风险与规则 */
+.rr-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.rr-col .rr-title{font-size:12px;font-weight:600;color:#666;margin-bottom:8px}
+.risk-item{border-left:3px solid #ef4444;background:#fef2f2;padding:10px 12px;border-radius:0 6px 6px 0;margin-bottom:8px}
+.risk-item .risk-name{font-size:13px;font-weight:600;color:#991b1b;margin-bottom:2px}
+.risk-item .risk-detail{font-size:12px;color:#7f1d1d;margin-bottom:4px}
+.risk-item .risk-prevention{font-size:12px;color:#4d7c0f;background:#f7fee7;border-radius:4px;padding:4px 8px}
+.rule-item{display:flex;align-items:center;gap:8px;padding:8px 10px;background:#f8f9fa;border-radius:6px;margin-bottom:6px;font-size:13px}
+.rule-item .rule-freq{font-size:11px;color:#888;margin-left:auto}
+
+/* 哨兵 */
+.sentry{border-left:4px solid #ef4444;background:#fef2f2;padding:14px 18px;border-radius:0 12px 12px 0;margin-bottom:14px;font-size:14px;color:#991b1b;line-height:1.7}
+
+/* 委员 */
+.committee-jobs{font-size:14px;color:#1d4ed8;margin-bottom:8px;line-height:1.6}
+.committee-munger{font-size:14px;color:#b45309;line-height:1.6}
+
+.last-updated{text-align:center;font-size:12px;color:#999;padding:16px 0}
+@media(max-width:700px){.bg-grid,.rr-grid,.frozen-grid{grid-template-columns:1fr}.ms-grid{grid-template-columns:1fr 1fr}.time-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="header">
+    <h1>📍 执行之井 · 阶段导航</h1>
+    <div class="phase-name" id="phaseName" style="font-size:17px;margin-top:6px">—</div>
+    <div class="meta" id="headerMeta">加载中…</div>
+  </div>
+
+  <!-- 阶段背景追溯 -->
+  <div class="card" id="bgCard">
+    <div class="card-title">🧭 阶段背景追溯</div>
+    <div class="bg-grid">
+      <div class="bg-item"><div class="label">来源</div><div class="value" id="bgSource">—</div></div>
+      <div class="bg-item"><div class="label">决策原文</div><div class="value" id="bgDecision">—</div></div>
+      <div class="bg-item" style="grid-column:span 2"><div class="label">杠杆说明</div><div class="value" id="bgLever">—</div></div>
+      <div class="bg-item" style="grid-column:span 2"><div class="label">委员会视角</div><div class="value quote" id="bgQuote">—</div></div>
+    </div>
+  </div>
+
+  <!-- 时间指标 -->
+  <div class="card">
+    <div class="time-grid">
+      <div class="time-item"><div class="label">总时间窗口</div><div class="value" id="totalTime">—</div></div>
+      <div class="time-item"><div class="label">已投入</div><div class="value" id="spentTime">—</div></div>
+      <div class="time-item"><div class="label">剩余时间</div><div class="value" id="remainingTime">—</div></div>
+    </div>
+    <div class="progress-bar"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
+    <div class="card-sub" id="energyStatus">—</div>
+  </div>
+
+  <!-- 历史进度记录 -->
+  <div class="card" id="historyCard">
+    <div class="card-title">🗺️ 历史进度记录</div>
+    <div class="timeline" id="timeline"></div>
+  </div>
+
+  <!-- 里程碑展开 -->
+  <div class="card">
+    <div class="card-title">🏁 里程碑</div>
+    <div class="ms-grid" id="milestones"></div>
+  </div>
+
+  <!-- 当前聚焦 -->
+  <div class="card">
+    <div class="card-title">🎯 当前聚焦方向</div>
+    <ul class="focus-list" id="focusList"></ul>
+  </div>
+
+  <!-- 冻结项目 -->
+  <div class="card" id="frozenCard">
+    <div class="card-title">🧊 冻结项目</div>
+    <div class="frozen-grid" id="frozenList"></div>
+  </div>
+
+  <!-- 风险与规则 -->
+  <div class="card" id="rrCard">
+    <div class="card-title">🛡️ 风险与规则</div>
+    <div class="rr-grid">
+      <div class="rr-col">
+        <div class="rr-title">⚠️ 风险点与预防</div>
+        <div id="riskList"></div>
+      </div>
+      <div class="rr-col">
+        <div class="rr-title">📋 活跃规则义务</div>
+        <div id="ruleList"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 偏航哨兵 -->
+  <div class="sentry" id="sentrySection">
+    <div style="font-weight:600;margin-bottom:4px">⚠️ 偏航哨兵</div>
+    <div id="sentryText">—</div>
+  </div>
+
+  <!-- 委员判断 -->
+  <div class="card" id="committeeSection">
+    <div class="card-title">👥 委员判断</div>
+    <div class="committee-jobs" id="committeeJobs"><strong>乔布斯：</strong>—</div>
+    <div class="committee-munger" id="committeeMunger"><strong>芒格：</strong>—</div>
+  </div>
+
+  <div class="last-updated" id="lastUpdated">—</div>
+</div>
+
+<script>
+// ===== 配置区：手动填入执行之井导航数据 =====
+const config = {
+  // 阶段名称
+  phaseName: "毕设攻坚期",
+
+  // === 阶段背景追溯 ===
+  background: {
+    source: "2026-Q3 委员会决议",
+    decision: "AI客服毕设作为唯一核心杠杆目标，9月前搞定",
+    lever: "六目标支点：①学业②Nuxt.js技术栈③AI积累④工作痛点⑤退化飞轮阻断⑥简历→找工作出口",
+    quote: "乔布斯：'毕设是战略性聚焦——一个支点撬动六个目标。'"
+  },
+
+  // === 时间数据（周） ===
+  totalWeeks: 8,
+  spentWeeks: 3,
+  remainingWeeks: 5,
+  deadline: "2026-09-01",
+  energyStatus: "精力：阶段一→正常恢复中（外部约束 7/10 · 内部调节 7/10）",
+
+  // === 历史进度记录（时间轴） ===
+  history: [
+    { date: "2026-05-10", event: "系统启动 · 勘探确立三条铁律（通透认知/主动判断/效能共情）", status: "done" },
+    { date: "2026-07-12", event: "Q3委员会 · 指定AI客服毕设为唯一核心战场，赛后握手确认9月前交付", status: "done" },
+    { date: "2026-07-23", event: "读屏半智能工具完成 · 从退化飞轮阶段二回到阶段一，重新获得学习能力", status: "done" },
+    { date: "2026-07-31", event: "当前位置 · 毕设核心功能开发进行中，距硬截止约4.5周", status: "current" }
+  ],
+
+  // === 里程碑展开 ===
+  milestones: [
+    { name: "需求与架构", done: true, period: "7月中旬",
+      standard: "需求定义 + 技术选型 + 架构设计",
+      tasks: ["AI客服需求梳理", "Nuxt.js + AI方案选型", "系统架构设计"] },
+    { name: "核心功能", done: "active", period: "7月底 - 8月中",
+      standard: "核心功能可演示（对小龙）",
+      tasks: ["对话界面搭建", "AI响应引擎", "知识库接入", "半智能回复集成"] },
+    { name: "集成测试", done: false, period: "8月中 - 8月底",
+      standard: "端到端跑通 + 测试用例",
+      tasks: ["前后端联调", "测试与修复"] },
+    { name: "交付发布", done: false, period: "8月底 - 9/1",
+      standard: "答辩可讲 + 文档可交 + 验证者能看",
+      tasks: ["文档编写", "答辩准备", "交付给验证者"] }
+  ],
+
+  // === 当前聚焦方向 ===
+  focuses: [
+    { text: "毕设核心功能开发", tag: "委员会", tagClass: "tag-committee",
+      desc: "唯一战场。M2切成3个可交付块，用读屏工具省下的脑力集中攻坚" },
+    { text: "每5天同步验证者", tag: "铁律2", tagClass: "tag-rule",
+      desc: "每个可交付块完成后给小龙一句话，制造中间检查点，打破静默" }
+  ],
+
+  // === 冻结项目 ===
+  frozen: ["NovelScope（毕设后重启）", "AI 写小说管线（搁置）", "引力井功能迭代（毕设后）", "AI 开发者导航系统（灵感冰箱）", "英语备考（8月中旬才启动）"],
+
+  // === 风险与规则 ===
+  risks: [
+    { name: "'能用'幻觉", detail: "功能跑通 ≠ 交付。三个项目停在'能用'的前科", prevention: "以'答辩可讲/文档可交/验证者能看'为完成标准" },
+    { name: "验证者静默", detail: "上次通知小龙的时间未知，交付物验证规则可能再次被跳过", prevention: "M2切3块 + 每5天发一句话，制造中间检查点" },
+    { name: "执行力折扣", detail: "4.5周是理论值，月休3天+工作打断，实际可能仅40%", prevention: "设8/20功能冻结日，留10天缓冲给文档和答辩" },
+    { name: "兴趣学习扩散", detail: "系统学/心理学可能抢占本应流向毕设的脑力", prevention: "闸门规则：本周毕设有产出，才允许兴趣学习" }
+  ],
+  rules: [
+    { name: "哨兵信号", freq: "每5天", status: "待执行" },
+    { name: "交付物验证通知", freq: "每次里程碑完成", status: "待执行" },
+    { name: "电池日", freq: "每两周", status: "周期" },
+    { name: "兴趣学习闸门", freq: "每周检查", status: "待执行" }
+  ],
+
+  // === 偏航哨兵 ===
+  sentry: "你不是在'学Nuxt.js'，你是在'用Nuxt.js做毕设'——主谓要颠倒。\n'推到能用'不是完成——毕设要交付（答辩可讲/文档可交/验证者能看）。\n兴趣学习闸门：本周毕设有产出吗？没有，你缺的不是知识，是交付。",
+
+  // === 委员判断 ===
+  committee: {
+    jobs: "聚焦：毕设核心功能是唯一战场。砍掉：英语备考（8月中旬前不存在）、堆积的义务。给毕设一句话定义。",
+    munger: "最弱环节：验证者仍在静默；'能用'幻觉（三次前科）；4.5周实际执行力可能仅40%。预防：8/20功能冻结留缓冲，M2切块同步，兴趣学习设闸门。"
+  },
+
+  // === 更新时间 ===
+  updatedAt: "2026-07-31 · 用户触发'当前待办'"
+};
+
+// ===== 渲染 =====
+function render() {
+  const c = config;
+  document.getElementById('phaseName').textContent = c.phaseName;
+  document.getElementById('headerMeta').textContent = '数据基准：2026-07-12 委员会 · 2026-07-23 雷达分析';
+
+  // 阶段背景
+  document.getElementById('bgSource').textContent = c.background.source;
+  document.getElementById('bgDecision').textContent = c.background.decision;
+  document.getElementById('bgLever').textContent = c.background.lever;
+  document.getElementById('bgQuote').textContent = c.background.quote;
+
+  // 时间指标
+  document.getElementById('totalTime').innerHTML = c.totalWeeks + ' <span style="font-size:13px;color:#666">周</span>';
+  document.getElementById('spentTime').innerHTML = c.spentWeeks + ' <span style="font-size:13px;color:#666">周</span>';
+  const remEl = document.getElementById('remainingTime');
+  const remVal = c.remainingWeeks;
+  let colorClass = 'green';
+  if (remVal <= 1) colorClass = 'red';
+  else if (remVal <= 3) colorClass = 'yellow';
+  remEl.innerHTML = '<span class="value ' + colorClass + '">' + remVal + '</span> <span style="font-size:13px;color:#666">周</span>';
+  document.getElementById('energyStatus').textContent = '截止：' + c.deadline + ' · ' + c.energyStatus;
+
+  // 进度条
+  const pct = Math.min(100, Math.round((c.spentWeeks / c.totalWeeks) * 100));
+  const fill = document.getElementById('progressFill');
+  fill.style.width = pct + '%';
+  if (pct > 80) fill.classList.add('danger');
+  else if (pct > 60) fill.classList.add('warning');
+
+  // 时间轴
+  const tlHtml = c.history.map(h => {
+    return '<div class="tl-item ' + h.status + '"><div class="tl-date">' + h.date + '</div><div class="tl-event">' + h.event + '</div></div>';
+  }).join('');
+  document.getElementById('timeline').innerHTML = tlHtml;
+
+  // 里程碑展开
+  const msHtml = c.milestones.map(m => {
+    let statusCls = 'pending', statusText = '待启动';
+    if (m.done === true) { statusCls = 'done'; statusText = '已完成'; }
+    else if (m.done === 'active') { statusCls = 'active'; statusText = '进行中'; }
+    const tasksHtml = m.tasks.map(t => '<li>' + t + '</li>').join('');
+    return '<div class="ms-card ' + statusCls + '">' +
+      '<div class="ms-name">' + m.name + '</div>' +
+      '<div class="ms-status"><span class="tag">' + statusText + '</span></div>' +
+      '<div class="ms-period">⏱ ' + m.period + '</div>' +
+      '<div class="ms-standard"><b>完成标准：</b>' + m.standard + '</div>' +
+      '<ul class="ms-tasks">' + tasksHtml + '</ul>' +
+      '</div>';
+  }).join('');
+  document.getElementById('milestones').innerHTML = msHtml;
+
+  // 聚焦
+  const focusHtml = c.focuses.map(f => {
+    return '<li><span class="tag ' + f.tagClass + '">' + f.tag + '</span> <strong>' + f.text + '</strong> — ' + f.desc + '</li>';
+  }).join('');
+  document.getElementById('focusList').innerHTML = focusHtml;
+
+  // 冻结
+  document.getElementById('frozenList').innerHTML = c.frozen.map(f => {
+    return '<div class="frozen-item"><span>❄️</span>' + f + '</div>';
+  }).join('');
+
+  // 风险与规则
+  const riskHtml = c.risks.map(r => {
+    return '<div class="risk-item"><div class="risk-name">' + r.name + '</div>' +
+      '<div class="risk-detail">' + r.detail + '</div>' +
+      '<div class="risk-prevention">🛡️ ' + r.prevention + '</div></div>';
+  }).join('');
+  document.getElementById('riskList').innerHTML = riskHtml;
+
+  const ruleHtml = c.rules.map(r => {
+    return '<div class="rule-item"><span>📋</span>' + r.name +
+      '<span class="rule-freq">' + r.freq + '</span></div>';
+  }).join('');
+  document.getElementById('ruleList').innerHTML = ruleHtml;
+
+  // 哨兵
+  document.getElementById('sentryText').innerHTML = c.sentry.replace(/\n/g, '<br>');
+
+  // 委员
+  document.getElementById('committeeJobs').innerHTML = '<strong>乔布斯：</strong>' + c.committee.jobs;
+  document.getElementById('committeeMunger').innerHTML = '<strong>芒格：</strong>' + c.committee.munger;
+
+  // 更新时间
+  document.getElementById('lastUpdated').textContent = '上次更新：' + c.updatedAt;
+}
+
+document.addEventListener('DOMContentLoaded', render);
+</script>
+</body>
+</html>
