@@ -9,7 +9,7 @@ license: MIT
 compatibility: Requires read/write access to user-selected data directory
 metadata:
   author: violet
-  version: "1.0.0"
+  version: "1.1.0"
 ---
 
 # 引力井 — 个人人生导航系统
